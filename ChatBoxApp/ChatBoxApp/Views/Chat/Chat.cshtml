@@ -1,0 +1,45 @@
+﻿@model List<ChatBoxApp.Models.Entities.ApplicationUser>
+<div class="row">
+    <div class="col-4">
+        <ul>
+            @foreach (var user in Model)
+            {
+                <li><a href="#" onclick="setReceiver('@user.Id')">@user.UserName</a></li>
+            }
+        </ul>
+    </div>
+    <div class="col-8">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+        <ul id="messagesList"></ul>
+    </div>
+</div>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chathub")
+        .build();
+
+    let receiverId = "";
+
+    function setReceiver(id) {
+        receiverId = id;
+    }
+
+    function sendMessage() {
+        const message = document.getElementById("messageInput").value;
+        if (receiverId && message) {
+            connection.invoke("SendMessage", receiverId, message);
+            document.getElementById("messageInput").value = "";
+        }
+    }
+
+    connection.on("ReceiveMessage", function (user, message) {
+        const li = document.createElement("li");
+        li.textContent = `${user}: ${message}`;
+        document.getElementById("messagesList").appendChild(li);
+    });
+
+    connection.start();
+</script>
