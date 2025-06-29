@@ -48,15 +48,17 @@ namespace ChatBoxApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid) return View("~/Views/Account/Login.cshtml");
-
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-            if (result.Succeeded)
+            if (ModelState.IsValid)
             {
-                return RedirectToAction("Chat", "Chat");
-            }
-            ModelState.AddModelError(string.Empty, "Invalid Login attempt.");
+                //return View("~/Views/Account/Login.cshtml");
 
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Chat", "Chat");
+                }
+                ModelState.AddModelError(string.Empty, "Invalid Login attempt.");
+            }
 
             return View("~/Views/Account/Login.cshtml",model);
         }
