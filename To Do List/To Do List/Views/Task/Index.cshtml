@@ -1,0 +1,64 @@
+﻿@model IEnumerable<To_Do_List.Models.TaskItem>
+
+@{
+    ViewData["Title"] = "To-Do List";
+}
+
+<h1>To-Do List</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Add New Task</a>
+</p>
+
+<p>
+    <a asp-action="Index">All</a> |
+    <a asp-action="Index" asp-route-filter="active">Active</a> |
+    <a asp-action="Index" asp-route-filter="completed">Completed</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Priority</td>
+                <td>
+                    @if (item.IsDone)
+                    {
+                        <span class="text-success">Done</span>
+                    }
+                    else
+                    {
+                        <span class="text-warning">Active</span>
+                    }
+                </td>
+                <td>
+                    <form asp-action="ToggleDone" method="post" style="display:inline">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn btn-sm btn-secondary">Toggle</button>
+                    </form>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a>
+                    <form asp-action="Delete" method="post" style="display:inline">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
